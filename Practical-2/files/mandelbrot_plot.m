@@ -7,7 +7,23 @@ function mandelbrot_plot(image_data, width, height, filename)
 %   height     - Image height in pixels
 %   filename   - Output filename (e.g., 'mandelbrot_HD.png')
 
-    fig = figure('Visible', 'off', 'Position', [0, 0, width, height]);
+    % FIX: Ensure directory exists and filename is valid
+    [filepath, name, ext] = fileparts(filename);
+    
+    % Create directory if it doesn't exist
+    if ~isempty(filepath) && ~exist(filepath, 'dir')
+        mkdir(filepath);
+    end
+    
+    % FIX: Sanitize filename - remove problematic characters
+    % Replace spaces and special chars that might cause issues
+    safe_name = regexprep(name, '[<>:"/\|?*'' ,;]', '_');
+    safe_filename = fullfile(filepath, [safe_name, ext]);
+    
+    fprintf('Saving to: %s\n', safe_filename);
+    
+    % Create figure with appropriate size
+    fig = figure('Visible', 'off', 'Position', [100, 100, min(width, 1920), min(height, 1080)]);
     
     imagesc(image_data);
     colormap(hot);
@@ -18,9 +34,21 @@ function mandelbrot_plot(image_data, width, height, filename)
     set(gca, 'Color', 'black');
     set(fig, 'Color', 'black');
     
-    % Save to file
-    saveas(fig, filename);
-    close(fig);
+    % FIX: Try different save methods with error handling
+    try
+        % Method 1: exportgraphics (more robust for large images)
+        exportgraphics(fig, safe_filename, 'Resolution', 150);
+    catch
+        try
+            % Method 2: saveas (fallback)
+            saveas(fig, safe_filename);
+        catch ME
+            % Method 3: print with explicit format
+            warning('Standard save failed, trying print command...');
+            print(fig, safe_filename, '-dpng', '-r150');
+        end
+    end
     
-    fprintf('Saved image: %s\n', filename);
+    close(fig);
+    fprintf('Saved image: %s\n', safe_filename);
 end
