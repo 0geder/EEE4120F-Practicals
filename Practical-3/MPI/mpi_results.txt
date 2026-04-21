@@ -1,0 +1,123 @@
+MPI RESULTS (4-10 cities)
+========================
+
+--- 1 PROCESSES ---
+Cities: 4
+Min Energy (kWh): 105
+Comp Time  (Tcomp) : 0.000000 s
+
+Cities: 5
+Min Energy (kWh): 115
+Comp Time  (Tcomp) : 0.000001 s
+
+Cities: 6
+Min Energy (kWh): 124
+Comp Time  (Tcomp) : 0.000002 s
+
+Cities: 7
+Min Energy (kWh): 145
+Comp Time  (Tcomp) : 0.000012 s
+
+Cities: 8
+Min Energy (kWh): 155
+Comp Time  (Tcomp) : 0.000050 s
+
+Cities: 9
+Min Energy (kWh): 171
+Comp Time  (Tcomp) : 0.000173 s
+
+Cities: 10
+Min Energy (kWh): 207
+Comp Time  (Tcomp) : 0.000952 s
+
+
+--- 2 PROCESSES ---
+Cities: 4
+Min Energy (kWh): 105
+Comp Time  (Tcomp) : 0.000001 s
+
+Cities: 5
+Min Energy (kWh): 115
+Comp Time  (Tcomp) : 0.000001 s
+
+Cities: 6
+Min Energy (kWh): 124
+Comp Time  (Tcomp) : 0.000002 s
+
+Cities: 7
+Min Energy (kWh): 145
+Comp Time  (Tcomp) : 0.000007 s
+
+Cities: 8
+Min Energy (kWh): 155
+Comp Time  (Tcomp) : 0.000026 s
+
+Cities: 9
+Min Energy (kWh): 171
+Comp Time  (Tcomp) : 0.000098 s
+
+Cities: 10
+Min Energy (kWh): 207
+Comp Time  (Tcomp) : 0.000940 s
+
+
+--- 4 PROCESSES ---
+Cities: 4
+Min Energy (kWh): 105
+Comp Time  (Tcomp) : 0.000002 s
+
+Cities: 5
+Min Energy (kWh): 115
+Comp Time  (Tcomp) : 0.000005 s
+
+Cities: 6
+Min Energy (kWh): 124
+Comp Time  (Tcomp) : 0.000010 s
+
+Cities: 7
+Min Energy (kWh): 145
+Comp Time  (Tcomp) : 0.000006 s
+
+Cities: 8
+Min Energy (kWh): 155
+Comp Time  (Tcomp) : 0.000015 s
+
+Cities: 9
+Min Energy (kWh): 171
+Comp Time  (Tcomp) : 0.000058 s
+
+Cities: 10
+Min Energy (kWh): 207
+Comp Time  (Tcomp) : 0.000474 s
+
+
+--- 8 PROCESSES ---
+Cities: 4
+Min Energy (kWh): 105
+Comp Time  (Tcomp) : 0.000007 s
+
+Cities: 5
+Min Energy (kWh): 115
+Comp Time  (Tcomp) : 0.000004 s
+
+Cities: 6
+Min Energy (kWh): 124
+Comp Time  (Tcomp) : 0.000004 s
+
+Cities: 7
+Min Energy (kWh): 145
+Comp Time  (Tcomp) : 0.000008 s
+
+Cities: 8
+Min Energy (kWh): 155
+Comp Time  (Tcomp) : 0.000015 s
+
+Cities: 9
+Min Energy (kWh): 171
+Comp Time  (Tcomp) : 0.000057 s
+
+Cities: 10
+Min Energy (kWh): 207
+Comp Time  (Tcomp) : 0.000305 s
+
+

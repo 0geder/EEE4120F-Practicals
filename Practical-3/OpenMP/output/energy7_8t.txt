@@ -1,0 +1,2 @@
+Minimum Energy Cost: 145 kWh
+Optimal Route: 1 -> 4 -> 6 -> 5 -> 3 -> 2 -> 7
