@@ -104,6 +104,17 @@ module ALU_tb;
         //               check_result(result, X+Y, test_id); test_id = test_id + 1;
         //
         //       Suggested pairs: (10,5), (0xFFFF, 1) [overflow], (0, 0)
+        a=16'd10;     b=16'd5;      alu_control=3'b000; #10;
+        check_result(result, 16'd15,    test_id); test_id=test_id+1;
+        check_zero(zero, 1'b0, test_id-1);
+
+        a=16'hFFFF;   b=16'd1;      alu_control=3'b000; #10; // overflow wraps
+        check_result(result, 16'd0,     test_id); test_id=test_id+1;
+        check_zero(zero, 1'b1, test_id-1);
+
+        a=16'd0;      b=16'd0;      alu_control=3'b000; #10;
+        check_result(result, 16'd0,     test_id); test_id=test_id+1;
+        check_zero(zero, 1'b1, test_id-1);
 
 
         $display("--- SUB (alu_control = 3'b001) ---");
@@ -111,36 +122,102 @@ module ALU_tb;
         // TODO: Test SUB with at least three pairs.
         //       Include a case where result = 0 to test the zero flag.
         //       Suggested pairs: (10, 5), (7, 7) [result=0], (5, 10) [underflow wrap]
+        a=16'd10;     b=16'd5;      alu_control=3'b001; #10;
+        check_result(result, 16'd5,     test_id); test_id=test_id+1;
+        check_zero(zero, 1'b0, test_id-1);
+
+        a=16'd7;      b=16'd7;      alu_control=3'b001; #10; // result = 0
+        check_result(result, 16'd0,     test_id); test_id=test_id+1;
+        check_zero(zero, 1'b1, test_id-1);
+
+        a=16'd5;      b=16'd10;     alu_control=3'b001; #10; // underflow wrap
+        check_result(result, 16'hFFFB,  test_id); test_id=test_id+1;
+        check_zero(zero, 1'b0, test_id-1);
 
 
         $display("--- INV / NOT (alu_control = 3'b010) ---");
 
         // TODO: Test INV (bitwise NOT, b is ignored) with at least two values.
         //       Suggested values for a: 16'h0000, 16'hFFFF, 16'hA5A5
+        a=16'h0000;   b=16'd0;      alu_control=3'b010; #10;
+        check_result(result, 16'hFFFF,  test_id); test_id=test_id+1;
+        check_zero(zero, 1'b0, test_id-1);
+
+        a=16'hFFFF;   b=16'd0;      alu_control=3'b010; #10;
+        check_result(result, 16'h0000,  test_id); test_id=test_id+1;
+        check_zero(zero, 1'b1, test_id-1);
+
+        a=16'hA5A5;   b=16'd0;      alu_control=3'b010; #10;
+        check_result(result, 16'h5A5A,  test_id); test_id=test_id+1;
+        check_zero(zero, 1'b0, test_id-1);
 
 
         $display("--- SHL (alu_control = 3'b011) ---");
 
         // TODO: Test left shift. Remember only b[3:0] is used as the shift amount.
         //       Suggested pairs (a, b): (16'h0001, 4), (16'h0003, 2), (16'hFFFF, 8)
+        a=16'h0001;   b=16'd4;      alu_control=3'b011; #10;
+        check_result(result, 16'h0010,  test_id); test_id=test_id+1;
+        check_zero(zero, 1'b0, test_id-1);
+
+        a=16'h0003;   b=16'd2;      alu_control=3'b011; #10;
+        check_result(result, 16'h000C,  test_id); test_id=test_id+1;
+        check_zero(zero, 1'b0, test_id-1);
+
+        a=16'hFFFF;   b=16'd8;      alu_control=3'b011; #10;
+        check_result(result, 16'hFF00,  test_id); test_id=test_id+1;
+        check_zero(zero, 1'b0, test_id-1);
 
 
         $display("--- SHR (alu_control = 3'b100) ---");
 
         // TODO: Test right shift (logical — MSB fills with 0).
         //       Suggested pairs: (16'h0080, 4), (16'hFFFF, 8), (16'h0001, 1)
+        a=16'h0080;   b=16'd4;      alu_control=3'b100; #10;
+        check_result(result, 16'h0008,  test_id); test_id=test_id+1;
+        check_zero(zero, 1'b0, test_id-1);
+
+        a=16'hFFFF;   b=16'd8;      alu_control=3'b100; #10;
+        check_result(result, 16'h00FF,  test_id); test_id=test_id+1;
+        check_zero(zero, 1'b0, test_id-1);
+
+        a=16'h0001;   b=16'd1;      alu_control=3'b100; #10;
+        check_result(result, 16'h0000,  test_id); test_id=test_id+1;
+        check_zero(zero, 1'b1, test_id-1);
 
 
         $display("--- AND (alu_control = 3'b101) ---");
 
         // TODO: Test bitwise AND.
         //       Suggested pairs: (16'hFFFF, 16'h0F0F), (16'hAAAA, 16'h5555), (0, anything)
+        a=16'hFFFF;   b=16'h0F0F;   alu_control=3'b101; #10;
+        check_result(result, 16'h0F0F,  test_id); test_id=test_id+1;
+        check_zero(zero, 1'b0, test_id-1);
+
+        a=16'hAAAA;   b=16'h5555;   alu_control=3'b101; #10;
+        check_result(result, 16'h0000,  test_id); test_id=test_id+1;
+        check_zero(zero, 1'b1, test_id-1);
+
+        a=16'd0;      b=16'hBEEF;   alu_control=3'b101; #10;
+        check_result(result, 16'h0000,  test_id); test_id=test_id+1;
+        check_zero(zero, 1'b1, test_id-1);
 
 
         $display("--- OR (alu_control = 3'b110) ---");
 
         // TODO: Test bitwise OR.
         //       Suggested pairs: (16'h0F0F, 16'hF0F0), (16'hAAAA, 16'h5555), (0, 16'hBEEF)
+        a=16'h0F0F;   b=16'hF0F0;   alu_control=3'b110; #10;
+        check_result(result, 16'hFFFF,  test_id); test_id=test_id+1;
+        check_zero(zero, 1'b0, test_id-1);
+
+        a=16'hAAAA;   b=16'h5555;   alu_control=3'b110; #10;
+        check_result(result, 16'hFFFF,  test_id); test_id=test_id+1;
+        check_zero(zero, 1'b0, test_id-1);
+
+        a=16'd0;      b=16'hBEEF;   alu_control=3'b110; #10;
+        check_result(result, 16'hBEEF,  test_id); test_id=test_id+1;
+        check_zero(zero, 1'b0, test_id-1);
 
 
         $display("--- SLT (alu_control = 3'b111) ---");
@@ -148,6 +225,17 @@ module ALU_tb;
         // TODO: Test set-less-than. Result must be 1 when a < b (unsigned), 0 otherwise.
         //       Test cases must include: a < b, a == b, a > b.
         //       Suggested pairs: (5, 10) -> 1,  (10, 10) -> 0,  (15, 3) -> 0
+        a=16'd5;      b=16'd10;     alu_control=3'b111; #10; // a < b -> 1
+        check_result(result, 16'd1,     test_id); test_id=test_id+1;
+        check_zero(zero, 1'b0, test_id-1);
+
+        a=16'd10;     b=16'd10;     alu_control=3'b111; #10; // a == b -> 0
+        check_result(result, 16'd0,     test_id); test_id=test_id+1;
+        check_zero(zero, 1'b1, test_id-1);
+
+        a=16'd15;     b=16'd3;      alu_control=3'b111; #10; // a > b -> 0
+        check_result(result, 16'd0,     test_id); test_id=test_id+1;
+        check_zero(zero, 1'b1, test_id-1);
 
 
         $display("--- Zero flag edge cases ---");
@@ -155,6 +243,17 @@ module ALU_tb;
         // TODO: Verify the zero flag is asserted for SUB where a == b.
         //       Verify the zero flag is de-asserted for all non-zero results.
         //       Verify the zero flag for INV of 16'hFFFF (result should be 0).
+        // SUB a==b -> zero=1
+        a=16'd42;     b=16'd42;     alu_control=3'b001; #10;
+        check_zero(zero, 1'b1, test_id); test_id=test_id+1;
+
+        // ADD non-zero result -> zero=0
+        a=16'd1;      b=16'd1;      alu_control=3'b000; #10;
+        check_zero(zero, 1'b0, test_id); test_id=test_id+1;
+
+        // INV of 0xFFFF -> result=0 -> zero=1
+        a=16'hFFFF;   b=16'd0;      alu_control=3'b010; #10;
+        check_zero(zero, 1'b1, test_id); test_id=test_id+1;
 
 
         // -----------------------------------------------------------------------

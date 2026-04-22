@@ -119,6 +119,21 @@ module GPR_tb;
         //
         //       Suggested values: R0=0xA000, R1=0xB001, R2=0xC002, R3=0xD003,
         //                         R4=0xE004, R5=0xF005, R6=0x1006, R7=0x2007
+        // Unique value per register for independence testing
+        reg [15:0] vals [0:7];
+        vals[0] = 16'hA000; vals[1] = 16'hB001; vals[2] = 16'hC002; vals[3] = 16'hD003;
+        vals[4] = 16'hE004; vals[5] = 16'hF005; vals[6] = 16'h1006; vals[7] = 16'h2007;
+
+        for (i = 0; i < 8; i = i + 1) begin
+            reg_write_en   = 1'b1;
+            reg_write_dest = i[2:0];
+            reg_write_data = vals[i];
+            @(posedge clk); #1;
+            reg_write_en = 1'b0;
+            reg_read_addr_1 = i[2:0]; #2;
+            check16(reg_read_data_1, vals[i], test_id);
+            test_id = test_id + 1;
+        end
 
 
         // ------------------------------------------------------------------
@@ -137,6 +152,13 @@ module GPR_tb;
         //           reg_read_addr_1 = 3'd0; #2;
         //           check16(reg_read_data_1, 16'hA000, test_id);  // original value
         //           test_id = test_id + 1;
+        reg_write_en   = 1'b0;
+        reg_write_dest = 3'd0;
+        reg_write_data = 16'hDEAD; // must NOT be written
+        @(posedge clk); #1;
+        reg_read_addr_1 = 3'd0; #2;
+        check16(reg_read_data_1, vals[0], test_id); // original value still there
+        test_id = test_id + 1;
 
 
         // ------------------------------------------------------------------
@@ -152,6 +174,11 @@ module GPR_tb;
         //           #2;
         //           check16(reg_read_data_1, 16'hB001, test_id); test_id=test_id+1;
         //           check16(reg_read_data_2, 16'hD003, test_id); test_id=test_id+1;
+        reg_read_addr_1 = 3'd1;
+        reg_read_addr_2 = 3'd3;
+        #2;
+        check16(reg_read_data_1, vals[1], test_id); test_id = test_id + 1;
+        check16(reg_read_data_2, vals[3], test_id); test_id = test_id + 1;
 
 
         // ------------------------------------------------------------------
@@ -177,6 +204,19 @@ module GPR_tb;
         //           #2;
         //           check16(reg_read_data_1, 16'hNEW_VALUE, test_id); // after write
         //           test_id = test_id + 1;
+        reg_write_en    = 1'b1;
+        reg_write_dest  = 3'd2;
+        reg_write_data  = 16'hCAFE;
+        reg_read_addr_1 = 3'd2;
+        #2; // before clock edge — should see OLD value (async read)
+        $display("INFO [T%0d]: Read during write = 0x%h (old value before posedge)",
+                 test_id, reg_read_data_1);
+        test_id = test_id + 1;
+        @(posedge clk); #1;
+        reg_write_en = 1'b0;
+        #2;
+        check16(reg_read_data_1, 16'hCAFE, test_id); // new value after write
+        test_id = test_id + 1;
 
 
         // ------------------------------------------------------------------

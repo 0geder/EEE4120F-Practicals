@@ -2,11 +2,11 @@
 // Practical 4: StarCore-1 — Single-Cycle Processor in Verilog
 // =========================================================================
 //
-// GROUP NUMBER:
+// GROUP NUMBER: 22
 //
 // MEMBERS:
-//   - Member 1 Name, Student Number
-//   - Member 2 Name, Student Number
+//   - Member 1 Samson Okuthe, OKTSAM001
+//   - Member 2 Nyakallo Peete, PTXNYA001
 
 // File        : DataMemory.v
 // Description : Data Memory (RAM).
@@ -42,6 +42,7 @@ module DataMemory (
     //
     //       reg [`COL-1:0] memory [`ROW_D-1:0];
     // -------------------------------------------------------------------------
+    reg [`COL-1:0] memory [`ROW_D-1:0];
 
 
     // -------------------------------------------------------------------------
@@ -55,6 +56,8 @@ module DataMemory (
     //       (In a full system the byte offset within a word would also be
     //       handled, but StarCore-1 only supports 16-bit aligned accesses.)
     // -------------------------------------------------------------------------
+    // Word address: lower 3 bits of byte address
+    wire [2:0] ram_addr = mem_access_addr[2:0];
 
 
     // -------------------------------------------------------------------------
@@ -78,6 +81,10 @@ module DataMemory (
     //           $fclose(log_fd);
     //       end
     // -------------------------------------------------------------------------
+    integer log_fd;
+    initial begin
+        $readmemb("./test/test.data", memory);
+    end
 
 
     // -------------------------------------------------------------------------
@@ -92,6 +99,11 @@ module DataMemory (
     //
     //       IMPORTANT: Use non-blocking assignment (<=).
     // -------------------------------------------------------------------------
+    // Synchronous write
+    always @(posedge clk) begin
+        if (mem_write_en)
+            memory[ram_addr] <= mem_write_data;
+    end
 
 
     // -------------------------------------------------------------------------
@@ -102,6 +114,8 @@ module DataMemory (
     //
     //       assign mem_read_data = mem_read ? memory[ram_addr] : 16'd0;
     // -------------------------------------------------------------------------
+    // Combinational gated read
+    assign mem_read_data = mem_read ? memory[ram_addr] : 16'd0;
 
 
 endmodule

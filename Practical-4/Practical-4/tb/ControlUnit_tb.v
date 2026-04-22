@@ -130,6 +130,53 @@ module ControlUnit_tb;
         //       NOTE on Branch: the manual's 'Branch' column maps to beq=1
         //       for BEQ and bne=1 for BNE. Both beq and bne are 0 for JMP.
         // ------------------------------------------------------------------
+        // ── LD (0000): alu_op=10, alu_src=1, mem_to_reg=1, reg_write=1, mem_read=1
+        opcode=4'b0000; #10;
+        check_ctrl(2'b10,1'b0,1'b0,1'b0, 1'b1,1'b0, 1'b1,1'b0, 1'b1,1'b1, test_id); test_id=test_id+1;
+
+        // ── ST (0001): alu_op=10, alu_src=1, mem_write=1
+        opcode=4'b0001; #10;
+        check_ctrl(2'b10,1'b0,1'b0,1'b0, 1'b0,1'b1, 1'b1,1'b0, 1'b0,1'b0, test_id); test_id=test_id+1;
+
+        // ── R-type (0010–1001): alu_op=00, reg_dst=1, reg_write=1
+        opcode=4'b0010; #10;
+        check_ctrl(2'b00,1'b0,1'b0,1'b0, 1'b0,1'b0, 1'b0,1'b1, 1'b0,1'b1, test_id); test_id=test_id+1; // ADD
+        opcode=4'b0011; #10;
+        check_ctrl(2'b00,1'b0,1'b0,1'b0, 1'b0,1'b0, 1'b0,1'b1, 1'b0,1'b1, test_id); test_id=test_id+1; // SUB
+        opcode=4'b0100; #10;
+        check_ctrl(2'b00,1'b0,1'b0,1'b0, 1'b0,1'b0, 1'b0,1'b1, 1'b0,1'b1, test_id); test_id=test_id+1; // INV
+        opcode=4'b0101; #10;
+        check_ctrl(2'b00,1'b0,1'b0,1'b0, 1'b0,1'b0, 1'b0,1'b1, 1'b0,1'b1, test_id); test_id=test_id+1; // SHL
+        opcode=4'b0110; #10;
+        check_ctrl(2'b00,1'b0,1'b0,1'b0, 1'b0,1'b0, 1'b0,1'b1, 1'b0,1'b1, test_id); test_id=test_id+1; // SHR
+        opcode=4'b0111; #10;
+        check_ctrl(2'b00,1'b0,1'b0,1'b0, 1'b0,1'b0, 1'b0,1'b1, 1'b0,1'b1, test_id); test_id=test_id+1; // AND
+        opcode=4'b1000; #10;
+        check_ctrl(2'b00,1'b0,1'b0,1'b0, 1'b0,1'b0, 1'b0,1'b1, 1'b0,1'b1, test_id); test_id=test_id+1; // OR
+        opcode=4'b1001; #10;
+        check_ctrl(2'b00,1'b0,1'b0,1'b0, 1'b0,1'b0, 1'b0,1'b1, 1'b0,1'b1, test_id); test_id=test_id+1; // SLT
+
+        // ── Reserved (1010): all zeros — NOP
+        opcode=4'b1010; #10;
+        check_ctrl(2'b00,1'b0,1'b0,1'b0, 1'b0,1'b0, 1'b0,1'b0, 1'b0,1'b0, test_id); test_id=test_id+1;
+
+        // ── BEQ (1011): alu_op=01, beq=1
+        opcode=4'b1011; #10;
+        check_ctrl(2'b01,1'b0,1'b1,1'b0, 1'b0,1'b0, 1'b0,1'b0, 1'b0,1'b0, test_id); test_id=test_id+1;
+
+        // ── BNE (1100): alu_op=01, bne=1
+        opcode=4'b1100; #10;
+        check_ctrl(2'b01,1'b0,1'b0,1'b1, 1'b0,1'b0, 1'b0,1'b0, 1'b0,1'b0, test_id); test_id=test_id+1;
+
+        // ── JMP (1101): jump=1
+        opcode=4'b1101; #10;
+        check_ctrl(2'b00,1'b1,1'b0,1'b0, 1'b0,1'b0, 1'b0,1'b0, 1'b0,1'b0, test_id); test_id=test_id+1;
+
+        // ── Undefined opcode (1110, 1111): all zeros
+        opcode=4'b1110; #10;
+        check_ctrl(2'b00,1'b0,1'b0,1'b0, 1'b0,1'b0, 1'b0,1'b0, 1'b0,1'b0, test_id); test_id=test_id+1;
+        opcode=4'b1111; #10;
+        check_ctrl(2'b00,1'b0,1'b0,1'b0, 1'b0,1'b0, 1'b0,1'b0, 1'b0,1'b0, test_id); test_id=test_id+1;
 
 
         $display("");
