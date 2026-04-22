@@ -1,0 +1,264 @@
+iverilog -Wall -I src/ -o build/alu_sim src/ALU.v tb/ALU_tb.v
+--- Running ALU testbench ---
+cd test && ../build/alu_sim
+VCD info: dumpfile ../waves/alu_tb.vcd opened for output.
+=== ALU Testbench ===
+--- ADD (alu_control = 3'b000) ---
+PASS [T1]: result = 15 (0x000f)
+PASS [T2]: result = 0 (0x0000)
+PASS [T3]: result = 0 (0x0000)
+--- SUB (alu_control = 3'b001) ---
+PASS [T4]: result = 5 (0x0005)
+PASS [T5]: result = 0 (0x0000)
+PASS [T6]: result = 65531 (0xfffb)
+--- INV / NOT (alu_control = 3'b010) ---
+PASS [T7]: result = 65535 (0xffff)
+PASS [T8]: result = 0 (0x0000)
+PASS [T9]: result = 23130 (0x5a5a)
+--- SHL (alu_control = 3'b011) ---
+PASS [T10]: result = 16 (0x0010)
+PASS [T11]: result = 12 (0x000c)
+PASS [T12]: result = 65280 (0xff00)
+--- SHR (alu_control = 3'b100) ---
+PASS [T13]: result = 8 (0x0008)
+PASS [T14]: result = 255 (0x00ff)
+PASS [T15]: result = 0 (0x0000)
+--- AND (alu_control = 3'b101) ---
+PASS [T16]: result = 3855 (0x0f0f)
+PASS [T17]: result = 0 (0x0000)
+PASS [T18]: result = 0 (0x0000)
+--- OR (alu_control = 3'b110) ---
+PASS [T19]: result = 65535 (0xffff)
+PASS [T20]: result = 65535 (0xffff)
+PASS [T21]: result = 48879 (0xbeef)
+--- SLT (alu_control = 3'b111) ---
+PASS [T22]: result = 1 (0x0001)
+PASS [T23]: result = 0 (0x0000)
+PASS [T24]: result = 0 (0x0000)
+--- Zero flag edge cases ---
+PASS [T25] zero flag = 1
+PASS [T26] zero flag = 0
+PASS [T27] zero flag = 1
+
+=== ALL 27 TESTS PASSED ===
+tb/ALU_tb.v:173: $finish called at 270000 (1ps)
+iverilog -Wall -I src/ -o build/gpr_sim src/GPR.v tb/GPR_tb.v
+--- Running GPR testbench ---
+cd test && ../build/gpr_sim
+VCD info: dumpfile ../waves/gpr_tb.vcd opened for output.
+=== GPR Testbench ===
+--- Test Group 1: Write and read back all 8 registers ---
+PASS [T1]: value = 0xa000
+PASS [T2]: value = 0xb001
+PASS [T3]: value = 0xc002
+PASS [T4]: value = 0xd003
+PASS [T5]: value = 0xe004
+PASS [T6]: value = 0xf005
+PASS [T7]: value = 0x1006
+PASS [T8]: value = 0x2007
+--- Test Group 2: Disabled write must not modify register ---
+PASS [T9]: value = 0xa000
+--- Test Group 3: Simultaneous dual-port read ---
+PASS [T10]: value = 0xb001
+PASS [T11]: value = 0xd003
+--- Test Group 4: Read address matches write address during write ---
+INFO [T12]: Read during write = 0xc002 (old value before posedge)
+PASS [T13]: value = 0xcafe
+
+=== ALL 13 TESTS PASSED ===
+tb/GPR_tb.v:126: $finish called at 108000 (1ps)
+iverilog -Wall -I src/ -o build/im_sim \
+	src/Parameter.v src/InstructionMemory.v tb/InstructionMemory_tb.v
+--- Running InstructionMemory testbench ---
+cd test && ../build/im_sim
+VCD info: dumpfile ../waves/im_tb.vcd opened for output.
+=== InstructionMemory Testbench ===
+PASS [T1]: PC=0x0000  instr=0000010000000000
+PASS [T2]: PC=0x0002  instr=0000010001000001
+PASS [T3]: PC=0x0004  instr=0010000001010000
+PASS [T4]: PC=0x0006  instr=0001001010000000
+PASS [T5]: PC=0x0008  instr=0011000001010000
+PASS [T6]: PC=0x000a  instr=0111000001010000
+PASS [T7]: PC=0x000c  instr=1000000001010000
+PASS [T8]: PC=0x000e  instr=1001000001010000
+PASS [T9]: PC=0x0010  instr=0010000000000000
+PASS [T10]: PC=0x0012  instr=1011000001000001
+PASS [T11]: PC=0x0014  instr=1100000001000000
+PASS [T12]: PC=0x0016  instr=1101000000000000
+PASS [T13]: PC=0x0018  instr=0000000000000000
+PASS [T14]: PC=0x001a  instr=0000000000000000
+PASS [T15]: PC=0x001c  instr=0000000000000000
+
+=== ALL 15 TESTS PASSED ===
+tb/InstructionMemory_tb.v:68: $finish called at 75000 (1ps)
+iverilog -Wall -I src/ -o build/dm_sim \
+	src/Parameter.v src/DataMemory.v tb/DataMemory_tb.v
+--- Running DataMemory testbench ---
+cd test && ../build/dm_sim
+VCD info: dumpfile ../waves/dm_tb.vcd opened for output.
+=== DataMemory Testbench ===
+--- Group 1: Verify $readmemb initialisation ---
+PASS [T1]: value=0x0001
+PASS [T2]: value=0x0002
+PASS [T3]: value=0x0003
+PASS [T4]: value=0x0004
+PASS [T5]: value=0x0005
+PASS [T6]: value=0x0006
+PASS [T7]: value=0x0007
+PASS [T8]: value=0x0008
+--- Group 2: Output is 0 when mem_read=0 ---
+PASS [T9]: value=0x0000
+--- Group 3: Synchronous write then read back ---
+PASS [T10]: value=0xabcd
+--- Group 4: Disabled write leaves memory unchanged ---
+PASS [T11]: value=0x0005
+--- Group 5: Write and read word[7] ---
+PASS [T12]: value=0x1234
+
+=== ALL 12 TESTS PASSED ===
+tb/DataMemory_tb.v:107: $finish called at 81000 (1ps)
+iverilog -Wall -I src/ -o build/ac_sim \
+	src/Parameter.v src/ALU_Control.v tb/ALU_Control_tb.v
+--- Running ALU_Control testbench ---
+cd test && ../build/ac_sim
+VCD info: dumpfile ../waves/ac_tb.vcd opened for output.
+=== ALU_Control Testbench ===
+--- ALUOp=10: all opcodes should map to ADD (000) ---
+PASS [T1]: ALU_Cnt = 000
+PASS [T2]: ALU_Cnt = 000
+PASS [T3]: ALU_Cnt = 000
+--- ALUOp=01: all opcodes should map to SUB (001) ---
+PASS [T4]: ALU_Cnt = 001
+PASS [T5]: ALU_Cnt = 001
+PASS [T6]: ALU_Cnt = 001
+--- ALUOp=00: decode per opcode ---
+PASS [T7]: ALU_Cnt = 000
+PASS [T8]: ALU_Cnt = 001
+PASS [T9]: ALU_Cnt = 010
+PASS [T10]: ALU_Cnt = 011
+PASS [T11]: ALU_Cnt = 100
+PASS [T12]: ALU_Cnt = 101
+PASS [T13]: ALU_Cnt = 110
+PASS [T14]: ALU_Cnt = 111
+--- Default (ALUOp=00, undefined opcode) -> ADD (000) ---
+PASS [T15]: ALU_Cnt = 000
+PASS [T16]: ALU_Cnt = 000
+
+=== ALL 16 TESTS PASSED ===
+tb/ALU_Control_tb.v:78: $finish called at 160000 (1ps)
+iverilog -Wall -I src/ -o build/cu_sim \
+	src/Parameter.v src/ControlUnit.v tb/ControlUnit_tb.v
+--- Running ControlUnit testbench ---
+cd test && ../build/cu_sim
+VCD info: dumpfile ../waves/cu_tb.vcd opened for output.
+=== ControlUnit Testbench ===
+    Format: check_ctrl(alu_op, jump, beq, bne, mem_read, mem_write, alu_src, reg_dst, mem_to_reg, reg_write, id)
+PASS [T1]: opcode=0000 all signals correct
+PASS [T2]: opcode=0001 all signals correct
+PASS [T3]: opcode=0010 all signals correct
+PASS [T4]: opcode=0011 all signals correct
+PASS [T5]: opcode=0100 all signals correct
+PASS [T6]: opcode=0101 all signals correct
+PASS [T7]: opcode=0110 all signals correct
+PASS [T8]: opcode=0111 all signals correct
+PASS [T9]: opcode=1000 all signals correct
+PASS [T10]: opcode=1001 all signals correct
+PASS [T11]: opcode=1010 all signals correct
+PASS [T12]: opcode=1011 all signals correct
+PASS [T13]: opcode=1100 all signals correct
+PASS [T14]: opcode=1101 all signals correct
+PASS [T15]: opcode=1110 all signals correct
+PASS [T16]: opcode=1111 all signals correct
+
+=== ALL 16 TESTS PASSED ===
+tb/ControlUnit_tb.v:126: $finish called at 160000 (1ps)
+iverilog -Wall -I src/ -o build/star_sim src/Parameter.v src/ALU.v src/GPR.v src/InstructionMemory.v src/DataMemory.v src/ALU_Control.v src/ControlUnit.v src/Datapath.v src/StarCore1.v tb/StarCore1_tb.v
+--- Running StarCore-1 integration testbench ---
+cd test && ../build/star_sim
+VCD info: dumpfile ../waves/star.vcd opened for output.
+=== StarCore-1 Integration Testbench ===
+
+5000 ns | PC=0x0000 | instr=0000010000000000 | R0=  0 R1=  0 R2=  0 R3=  0 | alu=0 z=1
+15000 ns | PC=0x0002 | instr=0000010001000001 | R0=  1 R1=  0 R2=  0 R3=  0 | alu=1 z=0
+25000 ns | PC=0x0004 | instr=0010000001010000 | R0=  1 R1=  2 R2=  0 R3=  0 | alu=3 z=0
+35000 ns | PC=0x0006 | instr=0001001010000000 | R0=  1 R1=  2 R2=  3 R3=  0 | alu=2 z=0
+45000 ns | PC=0x0008 | instr=0011000001010000 | R0=  1 R1=  2 R2=  3 R3=  0 | alu=65535 z=0
+55000 ns | PC=0x000a | instr=0111000001010000 | R0=  1 R1=  2 R2=65535 R3=  0 | alu=0 z=1
+65000 ns | PC=0x000c | instr=1000000001010000 | R0=  1 R1=  2 R2=  0 R3=  0 | alu=3 z=0
+75000 ns | PC=0x000e | instr=1001000001010000 | R0=  1 R1=  2 R2=  3 R3=  0 | alu=1 z=0
+85000 ns | PC=0x0010 | instr=0010000000000000 | R0=  1 R1=  2 R2=  1 R3=  0 | alu=2 z=0
+95000 ns | PC=0x0012 | instr=1011000001000001 | R0=  2 R1=  2 R2=  1 R3=  0 | alu=0 z=1
+105000 ns | PC=0x0016 | instr=1101000000000000 | R0=  2 R1=  2 R2=  1 R3=  0 | alu=4 z=0
+115000 ns | PC=0x0000 | instr=0000010000000000 | R0=  2 R1=  2 R2=  1 R3=  0 | alu=1 z=0
+125000 ns | PC=0x0002 | instr=0000010001000001 | R0=  2 R1=  2 R2=  1 R3=  0 | alu=2 z=0
+135000 ns | PC=0x0004 | instr=0010000001010000 | R0=  2 R1=  3 R2=  1 R3=  0 | alu=5 z=0
+145000 ns | PC=0x0006 | instr=0001001010000000 | R0=  2 R1=  3 R2=  5 R3=  0 | alu=3 z=0
+155000 ns | PC=0x0008 | instr=0011000001010000 | R0=  2 R1=  3 R2=  5 R3=  0 | alu=65535 z=0
+165000 ns | PC=0x000a | instr=0111000001010000 | R0=  2 R1=  3 R2=65535 R3=  0 | alu=2 z=0
+175000 ns | PC=0x000c | instr=1000000001010000 | R0=  2 R1=  3 R2=  2 R3=  0 | alu=3 z=0
+185000 ns | PC=0x000e | instr=1001000001010000 | R0=  2 R1=  3 R2=  3 R3=  0 | alu=1 z=0
+195000 ns | PC=0x0010 | instr=0010000000000000 | R0=  2 R1=  3 R2=  1 R3=  0 | alu=4 z=0
+205000 ns | PC=0x0012 | instr=1011000001000001 | R0=  4 R1=  3 R2=  1 R3=  0 | alu=1 z=0
+215000 ns | PC=0x0014 | instr=1100000001000000 | R0=  4 R1=  3 R2=  1 R3=  0 | alu=1 z=0
+225000 ns | PC=0x0016 | instr=1101000000000000 | R0=  4 R1=  3 R2=  1 R3=  0 | alu=8 z=0
+235000 ns | PC=0x0000 | instr=0000010000000000 | R0=  4 R1=  3 R2=  1 R3=  0 | alu=1 z=0
+245000 ns | PC=0x0002 | instr=0000010001000001 | R0=  2 R1=  3 R2=  1 R3=  0 | alu=2 z=0
+255000 ns | PC=0x0004 | instr=0010000001010000 | R0=  2 R1=  3 R2=  1 R3=  0 | alu=5 z=0
+265000 ns | PC=0x0006 | instr=0001001010000000 | R0=  2 R1=  3 R2=  5 R3=  0 | alu=3 z=0
+275000 ns | PC=0x0008 | instr=0011000001010000 | R0=  2 R1=  3 R2=  5 R3=  0 | alu=65535 z=0
+285000 ns | PC=0x000a | instr=0111000001010000 | R0=  2 R1=  3 R2=65535 R3=  0 | alu=2 z=0
+295000 ns | PC=0x000c | instr=1000000001010000 | R0=  2 R1=  3 R2=  2 R3=  0 | alu=3 z=0
+305000 ns | PC=0x000e | instr=1001000001010000 | R0=  2 R1=  3 R2=  3 R3=  0 | alu=1 z=0
+315000 ns | PC=0x0010 | instr=0010000000000000 | R0=  2 R1=  3 R2=  1 R3=  0 | alu=4 z=0
+325000 ns | PC=0x0012 | instr=1011000001000001 | R0=  4 R1=  3 R2=  1 R3=  0 | alu=1 z=0
+335000 ns | PC=0x0014 | instr=1100000001000000 | R0=  4 R1=  3 R2=  1 R3=  0 | alu=1 z=0
+345000 ns | PC=0x0016 | instr=1101000000000000 | R0=  4 R1=  3 R2=  1 R3=  0 | alu=8 z=0
+355000 ns | PC=0x0000 | instr=0000010000000000 | R0=  4 R1=  3 R2=  1 R3=  0 | alu=1 z=0
+365000 ns | PC=0x0002 | instr=0000010001000001 | R0=  2 R1=  3 R2=  1 R3=  0 | alu=2 z=0
+375000 ns | PC=0x0004 | instr=0010000001010000 | R0=  2 R1=  3 R2=  1 R3=  0 | alu=5 z=0
+385000 ns | PC=0x0006 | instr=0001001010000000 | R0=  2 R1=  3 R2=  5 R3=  0 | alu=3 z=0
+395000 ns | PC=0x0008 | instr=0011000001010000 | R0=  2 R1=  3 R2=  5 R3=  0 | alu=65535 z=0
+405000 ns | PC=0x000a | instr=0111000001010000 | R0=  2 R1=  3 R2=65535 R3=  0 | alu=2 z=0
+415000 ns | PC=0x000c | instr=1000000001010000 | R0=  2 R1=  3 R2=  2 R3=  0 | alu=3 z=0
+425000 ns | PC=0x000e | instr=1001000001010000 | R0=  2 R1=  3 R2=  3 R3=  0 | alu=1 z=0
+435000 ns | PC=0x0010 | instr=0010000000000000 | R0=  2 R1=  3 R2=  1 R3=  0 | alu=4 z=0
+445000 ns | PC=0x0012 | instr=1011000001000001 | R0=  4 R1=  3 R2=  1 R3=  0 | alu=1 z=0
+455000 ns | PC=0x0014 | instr=1100000001000000 | R0=  4 R1=  3 R2=  1 R3=  0 | alu=1 z=0
+465000 ns | PC=0x0016 | instr=1101000000000000 | R0=  4 R1=  3 R2=  1 R3=  0 | alu=8 z=0
+475000 ns | PC=0x0000 | instr=0000010000000000 | R0=  4 R1=  3 R2=  1 R3=  0 | alu=1 z=0
+485000 ns | PC=0x0002 | instr=0000010001000001 | R0=  2 R1=  3 R2=  1 R3=  0 | alu=2 z=0
+495000 ns | PC=0x0004 | instr=0010000001010000 | R0=  2 R1=  3 R2=  1 R3=  0 | alu=5 z=0
+505000 ns | PC=0x0006 | instr=0001001010000000 | R0=  2 R1=  3 R2=  5 R3=  0 | alu=3 z=0
+515000 ns | PC=0x0008 | instr=0011000001010000 | R0=  2 R1=  3 R2=  5 R3=  0 | alu=65535 z=0
+525000 ns | PC=0x000a | instr=0111000001010000 | R0=  2 R1=  3 R2=65535 R3=  0 | alu=2 z=0
+535000 ns | PC=0x000c | instr=1000000001010000 | R0=  2 R1=  3 R2=  2 R3=  0 | alu=3 z=0
+545000 ns | PC=0x000e | instr=1001000001010000 | R0=  2 R1=  3 R2=  3 R3=  0 | alu=1 z=0
+555000 ns | PC=0x0010 | instr=0010000000000000 | R0=  2 R1=  3 R2=  1 R3=  0 | alu=4 z=0
+565000 ns | PC=0x0012 | instr=1011000001000001 | R0=  4 R1=  3 R2=  1 R3=  0 | alu=1 z=0
+575000 ns | PC=0x0014 | instr=1100000001000000 | R0=  4 R1=  3 R2=  1 R3=  0 | alu=1 z=0
+585000 ns | PC=0x0016 | instr=1101000000000000 | R0=  4 R1=  3 R2=  1 R3=  0 | alu=8 z=0
+595000 ns | PC=0x0000 | instr=0000010000000000 | R0=  4 R1=  3 R2=  1 R3=  0 | alu=1 z=0
+605000 ns | PC=0x0002 | instr=0000010001000001 | R0=  2 R1=  3 R2=  1 R3=  0 | alu=2 z=0
+615000 ns | PC=0x0004 | instr=0010000001010000 | R0=  2 R1=  3 R2=  1 R3=  0 | alu=5 z=0
+625000 ns | PC=0x0006 | instr=0001001010000000 | R0=  2 R1=  3 R2=  5 R3=  0 | alu=3 z=0
+635000 ns | PC=0x0008 | instr=0011000001010000 | R0=  2 R1=  3 R2=  5 R3=  0 | alu=65535 z=0
+
+--- Post-Simulation Verification ---
+Checking R0 (expect 2 after ADD R0,R0,R0):
+PASS [T1]: value = 0x0002 (2)
+Checking R1 (expect 3 after second loop LD):
+PASS [T2]: value = 0x0003 (3)
+Checking R2 (expect 0xFFFF from SUB at sim end):
+PASS [T3]: value = 0xffff (65535)
+Checking DataMem[2] (expect 3 from ST):
+PASS [T4]: value = 0x0003 (3)
+
+--- Final Register File State ---
+R0=0x0002  R1=0x0003  R2=0xffff  R3=0x0000
+R4=0x0000  R5=0x0000  R6=0x0000  R7=0x0000
+
+--- Final Data Memory State ---
+Mem[0]=0x0001  Mem[1]=0x0002  Mem[2]=0x0003  Mem[3]=0x0005
+
+=== ALL 4 INTEGRATION TESTS PASSED ===
+tb/StarCore1_tb.v:132: $finish called at 640000 (1ps)
